@@ -1,6 +1,5 @@
 
 
-
 public class BinarySearchTree<E extends Comparable<E>> {
 	class Node {
 		E value;
@@ -19,20 +18,20 @@ public class BinarySearchTree<E extends Comparable<E>> {
 					other.leftChild == leftChild && other.rightChild == rightChild;
 		}
 	}
-	
+
 	protected Node root = null;
-	
+
 	protected void visit(Node n) {
 		System.out.println(n.value);
 	}
-	
+
 	public boolean contains(E val) {
 		return contains(root, val);
 	}
-	
+
 	protected boolean contains(Node n, E val) {
 		if (n == null) return false;
-		
+
 		if (n.value.equals(val)) {
 			return true;
 		} else if (n.value.compareTo(val) > 0) {
@@ -41,7 +40,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 			return contains(n.rightChild, val);
 		}
 	}
-	
+
 	public boolean add(E val) {
 		if (root == null) {
 			root = new Node(val);
@@ -49,7 +48,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		}
 		return add(root, val);
 	}
-	
+
 	protected boolean add(Node n, E val) {
 		if (n == null) {
 			return false;
@@ -63,21 +62,21 @@ public class BinarySearchTree<E extends Comparable<E>> {
 				return true;
 			} else {
 				return add(n.leftChild, val);
-			} 	
+			}
 		} else {
 			if (n.rightChild == null) {
 				n.rightChild = new Node(val);
 				return true;
 			} else {
 				return add(n.rightChild, val);
-			} 	
+			}
 		}
-	}	
-	
+	}
+
 	public boolean remove(E val) {
 		return remove(root, null, val);
 	}
-	
+
 	protected boolean remove(Node n, Node parent, E val) {
 		if (n == null) return false;
 
@@ -103,63 +102,84 @@ public class BinarySearchTree<E extends Comparable<E>> {
 	protected E maxValue(Node n) {
 		if (n.rightChild == null) {
 			return n.value;
-	    } else {
-	       return maxValue(n.rightChild);
-	    }
+			} else {
+				 return maxValue(n.rightChild);
+			}
 	}
 
-	
+
 	/*********************************************
-	 * 
+	 *
 	 * IMPLEMENT THE METHODS BELOW!
 	 *
 	 *********************************************/
-	
-	
+
+
 	// Method #1.
 	public Node findNode(E val) {
-
-		/* IMPLEMENT THIS METHOD! */
-		
-		return null; // this line is here only so this code will compile if you don't modify it
-
+		if (val == null) return null;
+		return findNode(root, val);
 	}
-	
+
+	protected Node findNode(Node n, E val) {
+		if (n == null) return null;
+		int cmp = val.compareTo(n.value);
+		if (cmp == 0) {
+			return n;
+		} else if (cmp < 0) {
+			return findNode(n.leftChild, val);
+		} else {
+			return findNode(n.rightChild, val);
+		}
+	}
+
 	// Method #2.
 	protected int depth(E val) {
-
-		/* IMPLEMENT THIS METHOD! */
-		
-		return -2; // this line is here only so this code will compile if you don't modify it
-
+		if (val == null) return -1;
+		return depth(root, 0, val);
 	}
-	
+
+	protected int depth(Node n, int nDepth, E val) {
+		if (n == null) return -1;
+		int cmp = val.compareTo(n.value);
+		if (cmp == 0) {
+			return nDepth;
+		} else if (cmp < 0) {
+			return depth(n.leftChild, nDepth + 1, val);
+		} else {
+			return depth(n.rightChild, nDepth + 1, val);
+		}
+	}
+
 	// Method #3.
 	protected int height(E val) {
+		Node n = findNode(val);
+		if (n == null) return -1;
+		return height(n);
+	}
 
-		/* IMPLEMENT THIS METHOD! */
-		
-		return -2; // this line is here only so this code will compile if you don't modify it
-
+	protected int height(Node n) {
+		if (n == null) return -1;
+		int leftHeight = height(n.leftChild);
+		int rightHeight = height(n.rightChild);
+		return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
 	}
 
 
 	// Method #4.
 	protected boolean isBalanced(Node n) {
-
-		/* IMPLEMENT THIS METHOD! */
-		
-		return true; // this line is here only so this code will compile if you don't modify it
-
+		if (n == null) return false;
+        if (findNode(n.value) == null) return false;
+        int leftHeight = height(n.leftChild);
+        if (n.leftChild != null && !isBalanced(n.leftChild)) return false;
+        if (n.rightChild != null && !isBalanced(n.rightChild)) return false;
+        int rightHeight = height(n.rightChild);
+		return Math.abs(leftHeight - rightHeight) <= 1;
 	}
-	
-	// Method #5. .
+
+	// Method #5.
 	public boolean isBalanced() {
-
-		/* IMPLEMENT THIS METHOD! */
-		
-		return false; // this line is here only so this code will compile if you don't modify it
-
+		return isBalanced(root);
 	}
 
 }
