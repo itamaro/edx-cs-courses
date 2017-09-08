@@ -11,10 +11,20 @@ import java.util.TreeMap;
 public class MovieRatingsParser {
 
 	public static TreeMap<String, PriorityQueue<Integer>> parseMovieRatings(List<UserMovieRating> allUsersRatings) {
-		
-		/* IMPLEMENT THIS METHOD! */
-		
-		return null; // this line is here only so this code will compile if you don't modify it
+		TreeMap<String, PriorityQueue<Integer>> ratingsMap = new TreeMap<String, PriorityQueue<Integer>>();
+    if (allUsersRatings == null) return ratingsMap;
+    for (UserMovieRating userRating : allUsersRatings) {
+      if (userRating == null) continue;
+      String movie = userRating.getMovie();
+      Integer rating = userRating.getUserRating();
+      if (movie == null || movie.Length() == 0 || rating < 0) continue;
+      movie = movie.toLower();
+      if (!ratingsMap.containsKey(movie)) {
+        ratingsMap.put(movie, new PriorityQueue<Integer>());
+      }
+      ratingsMap.get(movie).add(rating);
+    }
+		return ratingsMap;
 	}
 
 }
