@@ -25,8 +25,43 @@ public class GreedyDynamicAlgorithms {
    * @return
    */
   public static List<Direction> optimalGridPath(int[][] grid) {
-    //TODO
-    return null;
+    int m = grid.length, n = grid[0].length;
+    int[][] optCosts = new int[m][n];
+    Direction[][] optSteps = new Direction[m][n];
+    optCosts[0][0] = grid[0][0];
+    for (int i = 1; i < m; i++) {
+      optCosts[i][0] = optCosts[i - 1][0] + grid[i][0];
+      optSteps[i][0] = Direction.DOWN;
+    }
+    for (int j = 1; j < n; j++) {
+      optCosts[0][j] = optCosts[0][j - 1] + grid[0][j];
+      optSteps[0][j] = Direction.RIGHT;
+    }
+    for (int i = 1; i < m; i++) {
+      for (int j = 1; j < n; j++) {
+        int downCost = optCosts[i - 1][j] + grid[i][j];
+        int rightCost = optCosts[i][j - 1] + grid[i][j];
+        if (downCost < rightCost) {
+          optCosts[i][j] = downCost;
+          optSteps[i][j] = Direction.DOWN;
+        } else {
+          optCosts[i][j] = rightCost;
+          optSteps[i][j] = Direction.RIGHT;
+        }
+      }
+    }
+    LinkedList<Direction> path = new LinkedList<Direction>();
+    int i = m - 1, j = n - 1;
+    while (i > 0 || j > 0) {
+      Direction nextStep = optSteps[i][j];
+      path.addFirst(nextStep);
+      if (nextStep == Direction.DOWN) {
+        i--;
+      } else {
+        j--;
+      }
+    }
+    return path;
   }
 
   /**
