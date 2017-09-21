@@ -13,8 +13,40 @@ public class GreedyDynamicAlgorithms {
    * @return
    */
   public static int optimalIntervals(ArrayList<Interval> red, ArrayList<Interval> blue) {
-    //TODO
-    return -1;
+    Interval.sortByStartTime(blue);
+    Interval.sortByStartTime(red);
+    int numReds = 0;
+    while (!blue.isEmpty()) {
+      Interval firstBlue = blue.remove(0);
+      Interval bestRed = null;
+      int bestRedCovers = 0;
+      while (!red.isEmpty() && red.get(0).start <= firstBlue.finish) {
+        Interval nextRed = red.remove(0);
+        if (nextRed.finish < firstBlue.start) {
+          // this red is completely before the first blue, so its useless
+          continue;
+        }
+        // intersects firstBlue - how many more blues?
+        int covers = 1;
+        for (int b = 0;
+             b < blue.size() &&
+             nextRed.start <= blue.get(b).finish &&
+             nextRed.finish >= blue.get(b).start;
+             b++) {
+          covers++;
+        }
+        if (covers > bestRedCovers) {
+          bestRedCovers = covers;
+          bestRed = nextRed;
+        }
+      }
+      if (bestRedCovers == 0) return -1;
+      numReds++;
+      while (bestRedCovers-- > 1) {
+        blue.remove(0);
+      }
+    }
+    return numReds;
   }
 
   /**
@@ -78,8 +110,8 @@ public class GreedyDynamicAlgorithms {
    */
   public static class Interval {
 
-    int start;
-    int finish;
+    public int start;
+    public int finish;
 
     public Interval(int start, int finish) {
       this.start = start;
