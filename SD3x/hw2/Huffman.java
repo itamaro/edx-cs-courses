@@ -24,28 +24,46 @@ public class Huffman {
     //as we need to continually find and merge the nodes with smallest frequency
     PriorityQueue<Node> huffman = new PriorityQueue<>();
 
-    /*
-     * TODO:
-     * 1) add all nodes to the priority queue
-     * 2) continually merge the two lowest-frequency nodes until only one tree remains in the queue
-     * 3) Use this tree to create a mapping from characters (the leaves)
-     *    to their binary strings (the path along the tree to that leaf)
-     *
-     * Remember to store the final tree as a global variable, as you will need it
-     * to decode your encrypted string
-     */
+    // add all nodes to the priority queue
+    for (Map.Entry<Character, Integer> entry : freqMap.entrySet()) {
+      huffman.add(new Node(entry.getKey(), entry.getValue(), null, null));
+    }
+
+    // continually merge the two lowest-frequency nodes until only one tree remains in the queue
+    while (huffman.size() > 1) {
+      Node n1 = huffman.poll(), n2 = huffman.poll();
+      huffman.add(new Node(null, n1.freq + n2.freq, n1, n2));
+    }
+
+    huffmanTree = huffman.poll();
+     // Use this tree to create a mapping from characters (the leaves)
+     //  to their binary strings (the path along the tree to that leaf)
+
+    makeMapping(huffmanTree, "");
+  }
+
+  void makeMapping(Node node, String encoding) {
+    if (node.isLeaf()) {
+      mapping.put(node.letter, encoding);
+    } else {
+      makeMapping(node.left, encoding + "0");
+      makeMapping(node.right, encoding + "1");
+    }
   }
 
   /**
    * Use the global mapping to convert your input string into a binary string
    */
   public String encode() {
-    //TODO
-    return null;
+    StringBuilder encoded = new StringBuilder();
+    for (char c : input.toCharArray()) {
+      encoded.append(mapping.get(c));
+    }
+    return encoded.toString();
   }
 
   /**
-   * Use the huffmanTree to decrypt the encoding back into the original input
+   * Use the huffmanTree to decode the encoding back into the original input
    *
    * You should convert each prefix-free group of binary numbers in the
    * encoding to a character
@@ -54,8 +72,16 @@ public class Huffman {
    * @return the original string (should be the same as "input")
    */
   public String decode(String encoding) {
-    //TODO
-    return null;
+    StringBuilder decoded = new StringBuilder();
+    Node node = huffmanTree;
+    for (char c : encoding.toCharArray()) {
+      node = (c == '0' ? node.left : node.right);
+      if (node.isLeaf()) {
+        decoded.append(node.letter);
+        node = huffmanTree;
+      }
+    }
+    return decoded.toString();
   }
 
   /**
